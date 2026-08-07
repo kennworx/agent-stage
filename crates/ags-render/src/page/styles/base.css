@@ -1,0 +1,188 @@
+/* ============================================================================
+ * Artifact viewer styles
+ *
+ * A dark, quiet reading surface for an agent-authored reasoning artifact.
+ * Everything is driven by the semantic theme tokens in :root below (the
+ * visual-system capability's set, named after shadcn/ui). An agent `theme`
+ * block swaps these token values to re-theme the whole page (chrome + diagrams)
+ * live, with no re-render.
+ * ========================================================================== */
+
+:root {
+  /* Declare the page dark-and-light aware. Without this, browsers with "force dark
+     mode for sites" enabled (Brave/Chrome) treat us as a light-only page and auto-
+     invert our light theme — so light mode "looks like dark". Announcing `light dark`
+     opts us out of that darkening; our own `data-theme` drives the actual colors. */
+  color-scheme: light dark;
+
+  /* The scrollbar is painted by the browser, and `light dark` above leaves it to
+     the OS scheme — so a dark desktop draws a black gutter down the side of our
+     light theme. Naming both parts in our own tokens makes the gutter follow
+     `data-theme` like everything else. It inherits, so scrollable panes inside the
+     page follow too. Thumb lifted off the border toward the text: a thumb the
+     colour of a hairline is not something you can catch with a pointer. The track
+     is left transparent so it takes whichever surface it is on — the page, or a
+     card a code block scrolls inside. */
+  scrollbar-color: color-mix(in srgb, var(--border), var(--foreground) 25%)
+    transparent;
+
+  /* Semantic theme tokens, named after shadcn/ui's set so agent `theme` blocks read
+     in the same vocabulary the wider ecosystem uses. */
+  --background: #0b0e14; /* page background */
+  --card: #12161f; /* raised surfaces: code, tables, questions */
+  --foreground: #dfe4ec; /* primary text */
+  --muted-foreground: #8b95a6; /* secondary text: header strip, captions */
+  --border: #232a37; /* borders and hairline rules */
+  --primary: #7aa2f7; /* links, buttons, highlights */
+  --primary-foreground: #0b0e14; /* text/icons on a primary fill */
+
+  /* Diagram surface — mirrors the app tokens so `figure.diagram svg` can override
+     the engine's inline light theme without a self-referential var() cycle (a rule
+     that sets `--foreground: var(--foreground)` is invalid). Change the app tokens
+     (or the light toggle) and the diagram follows. */
+  --diagram-bg: var(--card);
+  --diagram-fg: var(--foreground);
+  /* A panel tone for hand-written `html` blocks that draw diagram-like boxes. */
+  --diagram-surface: color-mix(in srgb, var(--card), var(--foreground) 12%);
+  /* The stroke every diagram draws its node outlines in, mixed from the panel
+     toward the text. 55% rather than the engine's own 20%: a diagram sits on
+     --card, which is already lifted off the page, and a fifth of the way to the
+     foreground is a line you cannot see on it. This reads at ~4.7:1 against a
+     node's fill in either mode, which is what makes an inner stroke — a
+     cylinder's curves, a subroutine's rules, a double circle's inner ring —
+     visible at all. */
+  --diagram-border: color-mix(in srgb, var(--card), var(--foreground) 55%);
+}
+
+/* Light theme — flip the tokens; the whole page (chrome, code, tables, questions,
+   annotation cards, curtain, and the diagram) themes from these, so it all follows.
+   Toggled via `data-theme="light"` on <html>. */
+:root[data-theme='light'] {
+  --background: #ffffff;
+  --card: #f4f6fa;
+  --foreground: #1e2430;
+  --muted-foreground: #5a6472;
+  --border: #b7c0cd; /* visible hairline on light surfaces (was too pale) */
+  --primary: #3b5bdb;
+  --primary-foreground: #ffffff; /* text/icons on a primary fill (light mode) */
+  /* --diagram-surface and --diagram-border derive from --card/--foreground
+     (above), which already flip for light mode — no per-mode override needed. */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Native form controls follow the *active theme*, not the OS. The page root stays
+   `color-scheme: light dark` (above) to opt out of force-dark, but that makes native
+   controls (select dropdowns, buttons, radios, textareas) render in the OS scheme — a
+   dark "for agent" select on our light theme. Pin the control scheme per data-theme so
+   they match the page in both directions. */
+:root[data-theme='light'] button,
+:root[data-theme='light'] select,
+:root[data-theme='light'] textarea,
+:root[data-theme='light'] input {
+  color-scheme: light;
+}
+:root[data-theme='dark'] button,
+:root[data-theme='dark'] select,
+:root[data-theme='dark'] textarea,
+:root[data-theme='dark'] input {
+  color-scheme: dark;
+}
+
+/* The `hidden` attribute must win over the `display` rules below (author styles
+   otherwise beat the UA sheet's `[hidden] { display: none }`), so toggled
+   editors and comment boxes actually collapse. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font: 16px/1.6 system-ui, sans-serif;
+}
+
+/* Bottom chrome: a sticky toolbar pinned to the viewport bottom (label + the
+   Finish-review control). Fixed so it stays visible while the artifact scrolls;
+   below the Gate-2 curtain (z-index 100) so a held render still masks it. */
+header {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 1.4rem;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+/* The artifact's file name. Lifted out of the muted bar text — it is the one piece
+   of information in the strip, so it should read as content, not as chrome. Set in
+   the code face because that is what it is: a path component. */
+#artifact-name {
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.95em;
+}
+
+/* The artifact column — centered and comfortably measured. */
+main {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.4rem 6rem;
+}
+
+/* Table-of-contents rail.
+
+   Fixed, not in flow. The artifact column stays exactly 820px centered whether or
+   not a rail exists — which keeps the column's measure independent of the rail
+   AND means mounting the rail cannot reflow the blocks and invalidate the
+   overflow audit that ran just before it appeared.
+
+   It is placed in the gutter to the right of the centered column: half the
+   viewport, plus half the column, plus a gap. Below the breakpoint that gutter no
+   longer exists, so the rail is hidden rather than overlapping the text. */
+.toc {
+  position: fixed;
+  top: 2rem;
+  left: calc(50% + 410px + 2rem);
+  z-index: 40;
+  max-width: 15rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.toc li {
+  margin: 0.3rem 0;
+}
+.toc a {
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.toc a:hover {
+  color: var(--foreground);
+}
+/* The rail needs its full width to fit in the gutter without touching the edge:
+   half the column (410px) + the 2rem gap + 15rem of rail + a 1rem margin must fit
+   in half the viewport, which resolves to ~1400px. Narrower than that, there is no
+   room, so it is hidden rather than cramped or overlapping the text. */
+@media (max-width: 1400px) {
+  .toc {
+    display: none;
+  }
+}
+

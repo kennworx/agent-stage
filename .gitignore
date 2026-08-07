@@ -1,0 +1,24 @@
+# Rust build output (target-dir is .cargo/target per the global cargo config)
+/target
+/.cargo/target
+
+# Throwaway: validation spikes and the cloned reference repo
+/tmp
+
+# Editor / OS cruft
+*.rs.bk
+.DS_Store
+
+# Claude Code workspace (commands, skills, local settings)
+/.claude
+
+# wasm-bindgen output for the browser example (regenerate: see its README).
+crates/ags-wasm/examples/web/pkg/
+crates/ags-wasm/examples/web/main.js
+crates/ags-wasm/examples/web/main.js.map
+
+# Bytecode from the dev-time font-metrics generator (`crates/ags-mermaid/tools`).
+__pycache__/
+
+# Review feedback logs written beside artifacts (`ags present`/`poll`).
+*.ags.jsonl

@@ -1,0 +1,425 @@
+/* Implicit prose between fenced blocks — GitHub Flavored Markdown, rendered by
+   `lib/markdown.ts`. Every color here is a theme token, so prose re-colors with
+   the page exactly like the blocks around it. */
+.prose p {
+  margin: 0.6rem 0;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  line-height: 1.25;
+  margin: 1.6rem 0 0.6rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.prose h1 {
+  font-size: 1.5rem;
+}
+.prose h2 {
+  font-size: 1.2rem;
+}
+.prose h3 {
+  font-size: 1.02rem;
+}
+/* Below h3 the size well is nearly dry, so the remaining levels separate by
+   weight and color instead — h6 lands at the muted token. */
+.prose h4 {
+  font-size: 0.95rem;
+}
+.prose h5 {
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--foreground), var(--muted-foreground) 50%);
+}
+.prose h6 {
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Inline code. Scoped away from fenced code below, which owns its own panel. */
+.prose code {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  font: 0.85em ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--foreground);
+}
+
+/* Lists. Markers take the muted token so they read as structure, not content. */
+.prose ul,
+.prose ol {
+  margin: 0.6rem 0;
+  padding-left: 1.4rem;
+}
+.prose li {
+  margin: 0.25rem 0;
+}
+.prose li::marker {
+  color: var(--muted-foreground);
+}
+/* A loose list wraps each item in <p>; don't let that double the item spacing. */
+.prose li > p {
+  margin: 0.25rem 0;
+}
+.prose li > ul,
+.prose li > ol {
+  margin: 0.25rem 0;
+}
+
+/* Blockquote — deliberately quieter than a `note` block. A note is addressable:
+   it fills with --card, carries a full border and an uppercase kind label. A
+   blockquote is decorative quoted material, so it gets a hairline rule and muted
+   text and nothing else. The two must not be mistaken for one another. */
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.1rem 0 0.1rem 0.9rem;
+  border-left: 2px solid var(--border);
+  color: var(--muted-foreground);
+}
+
+.prose hr {
+  margin: 1.8rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.prose del,
+.prose s {
+  color: var(--muted-foreground);
+}
+
+.prose a {
+  color: var(--primary);
+  text-decoration-color: color-mix(in srgb, var(--primary), transparent 55%);
+  text-underline-offset: 0.15em;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* A link with nowhere to go — a wiki link, or a relative link to another
+   document. The label reads as prose; the dotted rule marks it as a reference
+   rather than a destination, and the target is disclosed in the title hint. */
+.link-hint {
+  border-bottom: 1px dotted var(--muted-foreground);
+  cursor: help;
+}
+
+/* Diagrams sit on a panel like the other blocks. The engine forces a light theme
+   by setting its own tokens inline on the SVG; an author `!important` rule beats a
+   non-important inline, so we retheme it from the app tokens and the diagram
+   follows the app theme automatically.
+
+   There used to be five more declarations here, setting --muted, --line, --accent
+   and --surface to `initial`. Custom properties inherit, so the page's own tokens
+   of those names leaked into every SVG and won over the engine's fallbacks — the
+   two vocabularies shared a namespace without sharing a definition, and the wall
+   was how the page defended itself. The engine's public tokens are `--ags-*` now,
+   so a collision is not possible and there is nothing to neutralise.
+
+   --ags-border is bridged on purpose rather than left to its own mix. The page's
+   chrome border is tuned for a hairline on the page background; pointing the
+   engine's node stroke at it made a node's outline almost exactly the colour of
+   its own fill — 1.07:1 on dark. An outer border still read, because what you see
+   there is the fill meeting the panel; but every stroke drawn *inside* a node — a
+   subroutine's rules, a double circle's inner ring, a cylinder's top and bottom
+   curves — disappeared entirely. --diagram-border is mixed from the same panel the
+   diagram sits on, far enough toward the text to be a line rather than a
+   suggestion.
+
+   --ags-accent is bridged for the same reason as --ags-bg: left alone, the engine
+   falls back to its own blue, so a re-themed page keeps a diagram accent from a
+   palette nobody chose. It is what an arrowhead, a person badge and every chart
+   series derive from — which is why a pie on an amber page came out blue.
+   Pointed at --primary, the drawing follows the palette picker with the chrome. */
+figure.diagram {
+  margin: 1.4rem 0;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+}
+figure.diagram svg {
+  --ags-bg: var(--diagram-bg) !important;
+  --ags-fg: var(--diagram-fg) !important;
+  --ags-accent: var(--primary) !important; /* arrowheads, badges, chart series */
+  --ags-border: var(--diagram-border); /* node stroke: bright enough to see on it */
+}
+figure.diagram svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+/* A diagram whose source the engine could not render. */
+figure.diagram.error {
+  background: #2a1416;
+  color: #ffb4b4;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+/* Code blocks — one rule for both forms. A `code` block (`pre.code`) and an
+   unrecognized prose fence (`.prose pre`) are the same thing to a reader; the
+   only difference is that the block carries an id and can be annotated per line.
+   Sharing the selector is what keeps the prose/block choice an affordance
+   decision rather than a visual one. */
+pre.code,
+.prose pre {
+  margin: 1.2rem 0;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: auto;
+  /* The font goes on the <pre>, not only on the inner <code>. A block's line box
+     is at least as tall as its own strut, so a <pre> left at the inherited
+     16px/1.6 body font keeps 25.6px lines no matter what the <code> asks for —
+     which is what tore the verticals out of box art. */
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+pre.code code,
+.prose pre code {
+  font: inherit;
+  color: var(--foreground);
+}
+
+/* A code block containing box-drawing characters. Those glyphs are ~1.21em tall
+   (measured: 1.213em in ui-monospace, 1.274em in Menlo), so they only tile when
+   the line box is no taller than that — at the 1.5 used for ordinary code they
+   float apart and the borders break into dashes. 1.2 closes the seam across the
+   whole font stack while staying readable. */
+pre.box-art,
+.prose pre.box-art {
+  line-height: 1.2;
+}
+/* Inline `.prose code` paints its own chip; inside a fence the panel already
+   supplies the surface, so strip it or the code double-boxes. */
+.prose pre code {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Tables. A table wider than the artifact column scrolls inside its wrapper
+   rather than escaping the column — which is also what lets the render gate stop
+   reporting a wide table as an overflow finding. Both table forms (a `table`
+   block and a prose pipe table) get the same wrapper and the same rules. */
+.table-scroll {
+  margin: 1.2rem 0;
+  overflow-x: auto;
+}
+/* The table owns no outer margin once wrapped — the wrapper supplies it, so the
+   two don't stack. */
+.table-scroll > table {
+  margin: 0;
+}
+table {
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  width: 100%;
+}
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.7rem;
+  text-align: left;
+}
+th {
+  background: var(--card);
+}
+
+/* Questions: a prompt line followed by its selectable options. */
+.question {
+  margin: 1.4rem 0;
+  padding: 1rem 1.2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.question .prompt {
+  font-weight: 600;
+  margin: 0.2rem 0 0.6rem;
+}
+.question ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.question li {
+  margin: 0.3rem 0;
+}
+/* Radio re-drawn from theme tokens (ring = --border, field = --background, checked =
+   a --primary dot). The checkbox keeps the native control (`accent-color`): its
+   checkmark colour can't be tokenised inside a data-URI, and native gives correct
+   contrast plus focus/disabled/forced-colors handling for free. */
+.question input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  margin: 0 0.45em 0 0;
+  vertical-align: -0.18em;
+  background: var(--background);
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.question input[type='radio']:checked {
+  border-color: var(--primary);
+  background: radial-gradient(circle at center, var(--primary) 0 42%, var(--background) 48%);
+}
+.question input[type='checkbox'] {
+  accent-color: var(--primary);
+}
+/* Restore what `appearance:none` removed from the custom radio: a visible keyboard
+   focus ring, disabled feedback, and a High-Contrast fallback (the gradient dot is
+   dropped under forced-colors, so mark checked with a system-colour fill). */
+.question input[type='radio']:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.question input[type='radio']:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (forced-colors: active) {
+  .question input[type='radio']:checked {
+    background: SelectedItem;
+    border-color: SelectedItem;
+  }
+}
+/* A `select`-type question: a block control on its own line, so the status sits
+   below it like the radio/checkbox lists (not crammed inline beside it). The native
+   dropdown arrow is stripped (it renders differently per browser engine and doesn't
+   theme) and replaced with our own chevron drawn in a theme token. */
+.q-select-wrap {
+  position: relative;
+  display: block;
+  width: fit-content;
+  min-width: 9rem;
+  max-width: 100%;
+  margin: 0.2rem 0 0.6rem;
+}
+.q-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 0.7rem;
+  top: 45%;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid var(--muted-foreground);
+  border-bottom: 2px solid var(--muted-foreground);
+  transform: translateY(-50%) rotate(45deg);
+  pointer-events: none;
+}
+.question select.q-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding: 0.35rem 1.9rem 0.35rem 0.6rem;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  /* An option wider than the card (capped at max-width:100%) truncates with an
+     ellipsis instead of overflowing; the open list still shows the full text. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.question select.q-select:hover {
+  border-color: var(--primary);
+}
+/* The free-text question's answer control shares the annotate composer's box; keep
+   its status on its own line too. */
+.question .ann-box {
+  margin-bottom: 0.4rem;
+}
+
+/* Notes: an addressable callout rendered by the viewer. `kind` (info/warn/claim) tints
+   the left rule and the small uppercase label; the body is prose markdown. Colors come
+   from theme tokens so a note follows the active theme (no raw color literals). */
+.note {
+  margin: 1.4rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--muted-foreground);
+  border-radius: 8px;
+}
+.note.warn,
+.note.claim {
+  border-left-color: var(--primary);
+}
+.note-kind {
+  display: inline-block;
+  margin-bottom: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.note.warn .note-kind,
+.note.claim .note-kind {
+  color: var(--primary);
+}
+/* The prose owns no outer margin here — the note supplies the padding. Target the
+   first/last child whatever its tag (a note body may open with a heading, not a <p>),
+   so the callout stays tight under its kind label either way. */
+.note .prose > :first-child {
+  margin-top: 0.2rem;
+}
+.note .prose > :last-child {
+  margin-bottom: 0.2rem;
+}
+/* A claim's yes/no answer row; the chosen side fills with the primary token. */
+.note-claim {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.note-claim button {
+  padding: 0.25rem 0.9rem;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.note-claim button:hover {
+  border-color: var(--primary);
+}
+.note-claim button.sel {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+.note-claim button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Agent-authored HTML chunks render inline. */
+.htmlchunk {
+  margin: 1.2rem 0;
+}
+

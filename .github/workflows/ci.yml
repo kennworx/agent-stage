@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust (stable + clippy + llvm-tools)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, llvm-tools-preview
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install just
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      # cargo-crap powers the CRAP gate; it lives on crates.io (pinned to the version the
+      # committed baseline was produced with).
+      - name: Install cargo-crap
+        run: cargo install cargo-crap --version 0.2.1 --locked
+
+      # `just clippy` is warn-level for local iteration; CI denies warnings so the
+      # pedantic lints are a hard gate. `--all-features` so the optional `raster`
+      # code is linted too — it is not compiled by a default build, and lint that
+      # never sees a module is not a gate over it.
+      - name: Clippy (deny warnings)
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+
+      # This runner is Linux/x86-64 and the reference image was drawn on
+      # macOS/aarch64, so a green run here is the cross-machine half of the
+      # determinism promise — two architectures agreeing on every byte. Nothing
+      # else in the repository can assert that.
+      - name: Raster determinism (reference drawn on another architecture)
+        run: cargo test -p ags-mermaid --features raster --locked
+
+      - name: CRAP gate + per-function coverage floor
+        run: just gate

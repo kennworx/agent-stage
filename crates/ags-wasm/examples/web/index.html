@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>agent-stage in a web page</title>
+
+<!--
+  Every entry point ags-wasm exports, exercised on one page: a whole artifact
+  rendered in a single call, each block type rendered on its own, and one sample
+  of every diagram type the engine draws.
+
+  See README.md for the three-command build, then:
+
+      python3 -m http.server -d crates/ags-wasm/examples/web
+
+  The logic is in main.ts, type-checked against the declarations wasm-bindgen
+  generates. This file only supplies the elements and this page's own chrome.
+-->
+
+<style>
+  /*
+    The example's own chrome only. Everything the renderer returns is styled by
+    the stylesheet the module hands back — `block_styles()` — which is the same
+    CSS the served and baked pages use, so a block here looks exactly as it does
+    there. Its tokens are the vocabulary below: --background, --card,
+    --foreground, --border, --primary. `data-theme` on <html> flips light/dark,
+    and a palette from `theme_styles()` is written onto <html> as inline style.
+  */
+  /*
+    The three variables a bare `render_svg` drawing reads. A diagram inside a
+    `<figure class="diagram">` is bridged by block_styles() already; one placed
+    straight into the page — the `render_svg` panel below — has only what the page
+    defines, and with none of them defined every fill resolves to nothing, which
+    browsers paint as black.
+  */
+  :root {
+    --ags-bg: var(--card);
+    --ags-fg: var(--foreground);
+    --ags-accent: var(--primary);
+  }
+
+  body {
+    margin: 0;
+    padding: 0 1.5rem 4rem;
+    background: var(--background);
+    color: var(--foreground);
+    font: 15px/1.5 Inter, system-ui, sans-serif;
+  }
+
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.8rem 0;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .bar h1 {
+    margin: 0 auto 0 0;
+    font-size: 1rem;
+  }
+  select {
+    font: inherit;
+    background: var(--card);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.2rem 0.45rem;
+  }
+
+  h2 {
+    margin: 2.2rem 0 0.2rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted-foreground);
+  }
+  h2 + p {
+    margin: 0 0 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.85rem;
+  }
+
+  /* One panel per call. The heading is the call itself, because that is what the
+     panel is for: seeing what a given entry point returns. */
+  .grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+    align-items: start;
+  }
+  .panel {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem 0.9rem;
+    background: var(--background);
+    overflow: auto;
+  }
+  .panel > .call {
+    margin: 0 0 0.5rem;
+    font: 600 0.72rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--primary);
+    word-break: break-all;
+  }
+
+  #split {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(20rem, 2fr) 3fr;
+    align-items: start;
+  }
+  @media (max-width: 60rem) {
+    #split { grid-template-columns: 1fr; }
+  }
+
+  textarea, pre {
+    font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow: auto;
+  }
+  textarea {
+    width: 100%;
+    min-height: 21rem;
+    resize: vertical;
+    box-sizing: border-box;
+    background: var(--card);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem;
+  }
+  pre#problems, pre#vocabulary {
+    background: var(--card);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.7rem;
+    margin: 0;
+    max-height: 13rem;
+    white-space: pre-wrap;
+  }
+  .bad { color: #d9534f; border-color: #d9534f; }
+  .muted { color: var(--muted-foreground); }
+  iframe {
+    width: 100%;
+    height: 30rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--background);
+  }
+  .panel svg { max-width: 100%; height: auto; }
+</style>
+
+<div class="bar">
+  <h1>agent-stage in a web page</h1>
+  <label for="palette">Palette</label>
+  <select id="palette"></select>
+  <label for="mode">Mode</label>
+  <select id="mode">
+    <option value="dark">dark</option>
+    <option value="light">light</option>
+  </select>
+  <span class="muted" id="coverage"></span>
+</div>
+
+<div id="split">
+  <section>
+    <h2>Artifact source</h2>
+    <p>Edited live. Everything on this page re-renders as you type.</p>
+    <textarea id="source" spellcheck="false">
+# Choosing a host
+
+We weighed two hosts. Portability tipped it.
+
+```mermaid #flow
+graph TD
+  Request --> Auth{Authenticated?}
+  Auth -->|yes| Serve[Serve artifact]
+  Auth -->|no| Deny[401]
+```
+
+```question #commit type=radio required
+Which host should we commit to?
+- Rust
+- TypeScript
+```
+
+| option | binary | startup |
+| --- | --- | --- |
+| Rust | one file | instant |
+| TypeScript | needs a runtime | slower |
+
+```note #claim kind=claim
+A single self-contained binary is the right shape for v1.
+```
+
+```code #snippet lang=rust
+pub fn present(path: &Path) -> io::Result&lt;()&gt; {
+    validate(path)?;
+    serve(path)
+}
+```
+</textarea>
+
+    <h2>Gate 1 — <code>validate</code></h2>
+    <pre id="problems"></pre>
+
+    <h2>Block vocabulary — <code>catalog</code></h2>
+    <pre id="vocabulary"></pre>
+  </section>
+
+  <section>
+    <h2>The whole artifact in one call — <code>render_named_page</code></h2>
+    <p>
+      A complete HTML document, so it gets its own browsing context via
+      <code>srcdoc</code>: its styles cannot leak into this page, or this page's
+      into it. It carries its own chrome, including the palette picker below.
+    </p>
+    <iframe id="preview" title="the rendered artifact"></iframe>
+  </section>
+</div>
+
+<h2>Every block type, rendered on its own</h2>
+<p>
+  The typed entry points, plus the two general ones. These return content markup
+  with no <code>&lt;style&gt;</code> — the rules come from <code>block_styles()</code>,
+  which this page put in its head once.
+</p>
+<div class="grid" id="blocks"></div>
+
+<h2>Every diagram type the engine draws</h2>
+<p id="diagram-note"></p>
+<div class="grid" id="diagrams"></div>
+
+<script type="module" src="./main.js"></script>

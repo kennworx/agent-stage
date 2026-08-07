@@ -1,0 +1,24 @@
+[package]
+name = "ags-wasm"
+version.workspace = true
+edition.workspace = true
+description = "WebAssembly bindings for agent-stage: render an artifact — prose and every block type — in the browser"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# The whole renderer, not just the diagram engine: a page that can draw a mermaid
+# block but not a question, a table or a themed HTML chunk can only show part of an
+# artifact, and the part it cannot show is the part a human was meant to act on.
+ags-render = { version = "0.1.0", path = "../ags-render" }
+ags-mermaid = { version = "0.1.0", path = "../ags-mermaid" }
+# Only reached when building for wasm32; a native `cargo test` of this crate
+# still compiles it, which is what keeps the binding honest on both targets.
+wasm-bindgen = "0.2.126"
+
+[lints]
+workspace = true

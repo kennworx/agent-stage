@@ -1,0 +1,26 @@
+[package]
+name = "ags-mermaid"
+version.workspace = true
+edition.workspace = true
+description = "Mermaid diagram rendering: text in, SVG out. No I/O, no browser."
+
+# Dependency-free by default, and that is the shape that matters: this is
+# compiled to WebAssembly and embedded in a page, so the default build carries
+# nothing it does not draw with.
+#
+# `raster` is the one exception, and it is opt-in for exactly that reason. Turning
+# a drawing into a PNG needs an SVG renderer, a font database and a rasteriser —
+# none of which a page build ever calls, because a page has a browser to do it.
+[features]
+default = []
+raster = ["dep:resvg", "dep:tiny-skia", "dep:usvg"]
+
+[dependencies]
+resvg = { version = "0.48.1", optional = true, default-features = false }
+tiny-skia = { version = "0.12.0", optional = true }
+usvg = { version = "0.48.1", optional = true, default-features = false, features = [
+  "text",
+] }
+
+[lints]
+workspace = true

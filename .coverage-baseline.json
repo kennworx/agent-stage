@@ -1,0 +1,239 @@
+{
+  "entries": [
+    {
+      "function": "parse_call",
+      "file": "./crates/ags-mermaid/src/c4/parser.rs",
+      "coverage": 83.33333333333334
+    },
+    {
+      "function": "rel_direction",
+      "file": "./crates/ags-mermaid/src/c4/parser.rs",
+      "coverage": 60.0
+    },
+    {
+      "function": "hsl_to_hex",
+      "file": "./crates/ags-mermaid/src/color.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "runs",
+      "file": "./crates/ags-mermaid/src/constraint.rs",
+      "coverage": 85.71428571428571
+    },
+    {
+      "function": "confine",
+      "file": "./crates/ags-mermaid/src/emit.rs",
+      "coverage": 81.81818181818183
+    },
+    {
+      "function": "shape_attrs",
+      "file": "./crates/ags-mermaid/src/emit.rs",
+      "coverage": 81.48148148148148
+    },
+    {
+      "function": "transform_attr",
+      "file": "./crates/ags-mermaid/src/emit.rs",
+      "coverage": 80.0
+    },
+    {
+      "function": "border_point",
+      "file": "./crates/ags-mermaid/src/eventmodeling/layout.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "is_word",
+      "file": "./crates/ags-mermaid/src/eventmodeling/parser.rs",
+      "coverage": 0.0
+    },
+    {
+      "function": "Entity::caption",
+      "file": "./crates/ags-mermaid/src/eventmodeling/types.rs",
+      "coverage": 75.0
+    },
+    {
+      "function": "Entity::color_index",
+      "file": "./crates/ags-mermaid/src/eventmodeling/types.rs",
+      "coverage": 75.0
+    },
+    {
+      "function": "Entity::token",
+      "file": "./crates/ags-mermaid/src/eventmodeling/types.rs",
+      "coverage": 75.0
+    },
+    {
+      "function": "clip",
+      "file": "./crates/ags-mermaid/src/flowchart/layout.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "State::set_head",
+      "file": "./crates/ags-mermaid/src/gitgraph/parser.rs",
+      "coverage": 71.42857142857143
+    },
+    {
+      "function": "first_token",
+      "file": "./crates/ags-mermaid/src/gitgraph/parser.rs",
+      "coverage": 66.66666666666666
+    },
+    {
+      "function": "option",
+      "file": "./crates/ags-mermaid/src/gitgraph/parser.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "option_type",
+      "file": "./crates/ags-mermaid/src/gitgraph/parser.rs",
+      "coverage": 85.71428571428571
+    },
+    {
+      "function": "attach",
+      "file": "./crates/ags-mermaid/src/ishikawa/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "is_word",
+      "file": "./crates/ags-mermaid/src/ishikawa/parser.rs",
+      "coverage": 0.0
+    },
+    {
+      "function": "level_len",
+      "file": "./crates/ags-mermaid/src/ishikawa/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "strip_decorations",
+      "file": "./crates/ags-mermaid/src/ishikawa/parser.rs",
+      "coverage": 85.71428571428571
+    },
+    {
+      "function": "is_word",
+      "file": "./crates/ags-mermaid/src/journey/parser.rs",
+      "coverage": 0.0
+    },
+    {
+      "function": "indent_of",
+      "file": "./crates/ags-mermaid/src/kanban/parser.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "transpose",
+      "file": "./crates/ags-mermaid/src/layout/order.rs",
+      "coverage": 81.25
+    },
+    {
+      "function": "Build::shift",
+      "file": "./crates/ags-mermaid/src/mindmap/layout.rs",
+      "coverage": 75.0
+    },
+    {
+      "function": "attach",
+      "file": "./crates/ags-mermaid/src/mindmap/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "indent_of",
+      "file": "./crates/ags-mermaid/src/mindmap/parser.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "is_word",
+      "file": "./crates/ags-mermaid/src/mindmap/parser.rs",
+      "coverage": 0.0
+    },
+    {
+      "function": "level_len",
+      "file": "./crates/ags-mermaid/src/mindmap/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "parse_entry",
+      "file": "./crates/ags-mermaid/src/mindmap/parser.rs",
+      "coverage": 88.0
+    },
+    {
+      "function": "unique_id",
+      "file": "./crates/ags-mermaid/src/mindmap/parser.rs",
+      "coverage": 85.71428571428571
+    },
+    {
+      "function": "Shape::token",
+      "file": "./crates/ags-mermaid/src/mindmap/types.rs",
+      "coverage": 80.0
+    },
+    {
+      "function": "clip",
+      "file": "./crates/ags-mermaid/src/requirement/layout.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "parse",
+      "file": "./crates/ags-mermaid/src/requirement/parser.rs",
+      "coverage": 89.83050847457628
+    },
+    {
+      "function": "parse_block_open",
+      "file": "./crates/ags-mermaid/src/requirement/parser.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "parse_field",
+      "file": "./crates/ags-mermaid/src/requirement/parser.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "Kind::keyword",
+      "file": "./crates/ags-mermaid/src/requirement/types.rs",
+      "coverage": 66.66666666666666
+    },
+    {
+      "function": "Font::default",
+      "file": "./crates/ags-mermaid/src/scene.rs",
+      "coverage": 0.0
+    },
+    {
+      "function": "attach",
+      "file": "./crates/ags-mermaid/src/treemap/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "indent_of",
+      "file": "./crates/ags-mermaid/src/treemap/parser.rs",
+      "coverage": 88.88888888888889
+    },
+    {
+      "function": "level_len",
+      "file": "./crates/ags-mermaid/src/treemap/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "strip_highlight",
+      "file": "./crates/ags-mermaid/src/treemap/parser.rs",
+      "coverage": 85.71428571428571
+    },
+    {
+      "function": "branch_label",
+      "file": "./crates/ags-mermaid/src/treemap/render.rs",
+      "coverage": 77.77777777777779
+    },
+    {
+      "function": "attach",
+      "file": "./crates/ags-mermaid/src/treeview/parser.rs",
+      "coverage": 87.5
+    },
+    {
+      "function": "unique_path",
+      "file": "./crates/ags-mermaid/src/treeview/parser.rs",
+      "coverage": 84.61538461538461
+    },
+    {
+      "function": "is_word",
+      "file": "./crates/ags-mermaid/src/venn/parser.rs",
+      "coverage": 0.0
+    },
+    {
+      "function": "is_word",
+      "file": "./crates/ags-mermaid/src/wardley/parser.rs",
+      "coverage": 0.0
+    }
+  ]
+}

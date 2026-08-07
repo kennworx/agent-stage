@@ -1,0 +1,20 @@
+[package]
+name = "ags-feedback"
+version.workspace = true
+edition.workspace = true
+description = "Anchored review feedback: the model, a local append-only log, and the poll that returns it"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+# Knows nothing about artifacts, markdown or diagrams. An item names a block by id
+# and optionally an element within it; what those ids mean is the caller's business.
+# That is what makes this reusable outside the tool it was written for — and it is
+# enforced by the dependency list, which mentions no renderer.
+[dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+toon-rs = "2.1.0"
+
+[lints]
+workspace = true

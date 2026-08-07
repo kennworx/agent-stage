@@ -1,0 +1,137 @@
+/* ============================================================================
+ * Themed-content kit — the positive vocabulary for `html` blocks.
+ *
+ * §2 (visual-system) makes raw color/font/positioning unauthorable; this kit is
+ * the other half: reusable, token-driven primitives so common UI reads correctly
+ * without any custom color. Everything flows through the shadcn tokens, so it
+ * flips with the theme automatically. Named icons (`data-icon="…"`) inject an
+ * inline `.ui-icon` SVG that strokes with currentColor.
+ * ========================================================================== */
+.ui-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+}
+.ui-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+}
+/* `align-items: baseline` so the pill's own text shares the baseline of the
+   sentence around it, and `vertical-align: baseline` so the box is placed by that
+   baseline rather than by its bottom edge. Both are needed: an inline-flex box
+   takes its baseline from its first flex item, and the first item here is the
+   icon — a glyph box with no text baseline — so the browser synthesised one from
+   its bottom margin edge and the whole pill rode high above the line it sat in.
+   The icon opts out via `align-self` below, leaving the label to set it. */
+.ui-pill,
+.ui-chip {
+  display: inline-flex;
+  align-items: baseline;
+  vertical-align: baseline;
+  gap: 0.3rem;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+/* The glyph centres on the label instead of sitting on the baseline — a square
+   icon aligned by its bottom edge reads as falling off the text. */
+.ui-pill > [data-icon],
+.ui-chip > [data-icon] {
+  align-self: center;
+}
+.ui-pill {
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 0.85em;
+}
+.ui-chip {
+  padding: 0.05rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.78em;
+}
+.ui-muted {
+  color: var(--muted-foreground);
+}
+.ui-primary {
+  color: var(--primary);
+}
+/* Injected named-icon glyph: sized to the text, inherits currentColor. Kept a fixed
+   1em box; the [data-icon] wrapper (not the svg) is the flex child of a pill/chip and
+   won't shrink below the glyph's min size, so no flex override is needed here. */
+.ui-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  display: inline-block;
+}
+
+/* Custom 2-D diagram primitives (visual-system §3.2). Pure HTML/CSS layout — no SVG
+   and no positioning (both barred by Gate 1) — so an agent builds matrices, before/
+   after panels, swimlanes and layered regions out of divs. Every color is a theme
+   token, so a custom diagram flips with the palette exactly like Mermaid. A
+   `.ui-diagram-node` is the annotatable unit: it carries a `data-id` (Gate 1 requires
+   one) and the viewer wires it for feedback, reusing the `.node-target` affordance. */
+.ui-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.ui-diagram-grid {
+  /* Column count is the agent's choice via an inline `grid-template-columns`
+     (e.g. `repeat(3, 1fr)`) — a non-color/non-position value that passes Gate 1. */
+  display: grid;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.ui-diagram-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.ui-diagram-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.ui-diagram-node {
+  background: var(--diagram-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  text-align: center;
+}
+.ui-diagram-region {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+}
+.ui-diagram-region-title {
+  color: var(--muted-foreground);
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.ui-diagram-label {
+  color: var(--muted-foreground);
+  font-size: 0.85em;
+  text-align: center;
+}
+.ui-diagram-arrow {
+  align-self: center;
+  color: var(--muted-foreground);
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+/* Fatal viewer error (e.g. the artifact could not be fetched). */
+.fail {
+  color: #ffb4b4;
+  font-family: ui-monospace, monospace;
+}
+

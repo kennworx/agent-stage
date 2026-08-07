@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    // The browser loads ES modules directly, so emit them unchanged and let the
+    // page do the loading. No bundler in this example: the point is to show the
+    // module working, not a build pipeline.
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    // The wasm-bindgen declarations are the contract; type-check against them
+    // strictly, so a renamed export breaks here rather than in the browser.
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+
+    // No outDir: `main.js` lands beside `main.ts`, which is what index.html
+    // loads. Setting it to "." would make tsc exclude its own inputs.
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": ["main.ts", "samples.ts", "pkg/*.d.ts"]
+}
